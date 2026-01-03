@@ -18,11 +18,12 @@
         <module>api-gateway</module>
         <module>catalog-service</module>
         <module>order-service</module>
+        <module>payment-service</module>
+        <module>kitchen-service</module>
 
         <!--        Not implemented yet-->
-        <!--<module>kitchen-service</module>
-        <module>booking-service</module>
-        <module>delivery-service</module>
+<!--        <module>booking-service</module>-->
+        <!--<module>delivery-service</module>
         <module>identity-service</module>-->
     </modules>
 </project>

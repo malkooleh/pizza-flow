@@ -17,3 +17,11 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/api/v1/orders/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payments/**
+        - id: kitchen-service
+          uri: lb://kitchen-service
+          predicates:
+            - Path=/api/v1/kitchen/**

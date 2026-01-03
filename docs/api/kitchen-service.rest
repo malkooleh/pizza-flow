@@ -1,0 +1,11 @@
+### Get Kitchen Queue
+GET http://localhost:8085/api/v1/kitchen/queue
+
+### Update Order Status to PREPARING
+PATCH http://localhost:8085/api/v1/kitchen/orders/12345/status?status=PREPARING
+
+### Update Order Status to READY
+PATCH http://localhost:8085/api/v1/kitchen/orders/12345/status?status=READY
+
+### Update Order Status to COMPLETED
+PATCH http://localhost:8085/api/v1/kitchen/orders/12345/status?status=COMPLETED

@@ -1,0 +1,11 @@
+### Process Payment (Success Scenario)
+POST http://localhost:8084/api/v1/payments
+Content-Type: application/json
+
+{
+  "orderId": 12345,
+  "amount": 25.50
+}
+
+### Get Payment by Order ID
+GET http://localhost:8084/api/v1/payments/order/12345
