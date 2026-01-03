@@ -1,0 +1,33 @@
+### Get Access Token (Keycloak)
+# @name login
+POST http://localhost:8081/realms/pizza-flow/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=pizza-flow-web
+&username=pizza-user
+&password=password
+&grant_type=password
+
+### Gateway Health Check
+GET http://localhost:8080/actuator/health
+
+### Gateway Info
+GET http://localhost:8080/actuator/info
+
+### Route Test: Catalog Service (List Products)
+# Should route to catalog-service
+GET http://localhost:8080/api/v1/catalog
+Authorization: Bearer <YOUR_ACCESS_TOKEN>
+
+### Route Test: Order Service (Get Order)
+# Should route to order-service
+GET http://localhost:8080/api/v1/orders/1
+Authorization: Bearer <YOUR_ACCESS_TOKEN>
+
+### Future: Test Rate Limiting
+# Requires implementing RateLimiter filter in Gateway
+# GET http://localhost:8080/api/v1/catalog
+
+### Future: Test Circuit Breaker (Fallback)
+# Requires implementing CircuitBreaker filter
+# GET http://localhost:8080/api/v1/catalog/unavailable

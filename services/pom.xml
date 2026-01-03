@@ -16,11 +16,11 @@
         <module>discovery-service</module>
         <module>config-service</module>
         <module>api-gateway</module>
+        <module>catalog-service</module>
+        <module>order-service</module>
 
         <!--        Not implemented yet-->
-        <!--<module>catalog-service</module>
-        <module>order-service</module>
-        <module>kitchen-service</module>
+        <!--<module>kitchen-service</module>
         <module>booking-service</module>
         <module>delivery-service</module>
         <module>identity-service</module>-->

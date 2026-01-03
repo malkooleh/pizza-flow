@@ -1,0 +1,11 @@
+### Get All Products
+GET http://localhost:8083/api/v1/catalog
+
+### Get Product by ID (Replace with actual ID from previous call)
+GET http://localhost:8083/api/v1/catalog/69565ff5788fe516e6f86b45
+
+### Get Products by Category (PIZZA)
+GET http://localhost:8083/api/v1/catalog/category/PIZZA
+
+### Get Products by Category (DRINK)
+GET http://localhost:8083/api/v1/catalog/category/DRINK
