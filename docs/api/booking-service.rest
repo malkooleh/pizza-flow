@@ -1,0 +1,16 @@
+### Create Booking
+POST http://localhost:8085/api/v1/bookings
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "customerId": "user-123",
+  "partySize": 2,
+  "bookingTime": "2024-12-01T19:00:00Z"
+}
+
+### Get Bookings for Customer
+GET http://localhost:8085/api/v1/bookings/customer/user-123
+
+### Get All Tables
+GET http://localhost:8085/api/v1/bookings/tables

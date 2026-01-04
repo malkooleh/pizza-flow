@@ -20,9 +20,10 @@
         <module>order-service</module>
         <module>payment-service</module>
         <module>kitchen-service</module>
+        <module>booking-service</module>
+        <module>inventory-service</module>
 
         <!--        Not implemented yet-->
-<!--        <module>booking-service</module>-->
         <!--<module>delivery-service</module>
         <module>identity-service</module>-->
     </modules>

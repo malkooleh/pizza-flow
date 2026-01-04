@@ -1,0 +1,38 @@
+### Create Inventory Item - Dough
+POST http://localhost:8086/api/v1/inventory
+Content-Type: application/json
+
+{
+  "productId": "DOUGH",
+  "productName": "Pizza Dough",
+  "quantity": 1000,
+  "unit": "kg"
+}
+
+### Create Inventory Item - Cheese
+POST http://localhost:8086/api/v1/inventory
+Content-Type: application/json
+
+{
+  "productId": "CHEESE",
+  "productName": "Mozzarella Cheese",
+  "quantity": 500,
+  "unit": "kg"
+}
+
+### Create Inventory Item - Tomato Sauce
+POST http://localhost:8086/api/v1/inventory
+Content-Type: application/json
+
+{
+  "productId": "TOMATO_SAUCE",
+  "productName": "Tomato Sauce",
+  "quantity": 300,
+  "unit": "liters"
+}
+
+### Get All Inventory Items
+GET http://localhost:8086/api/v1/inventory
+
+### Get Specific Inventory Item
+GET http://localhost:8086/api/v1/inventory/1
