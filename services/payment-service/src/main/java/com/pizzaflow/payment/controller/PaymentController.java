@@ -16,7 +16,7 @@ public class PaymentController {
 
     @PostMapping
     public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest request) {
-        return ResponseEntity.ok(paymentService.processPayment(request));
+        return ResponseEntity.ok(paymentService.processPayment(request.getOrderId(), request.getAmount()));
     }
 
     @GetMapping("/order/{orderId}")
