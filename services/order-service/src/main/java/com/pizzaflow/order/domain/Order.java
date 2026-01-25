@@ -40,6 +40,15 @@ public class Order {
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -50,8 +59,10 @@ public class Order {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order order)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Order order))
+            return false;
         return id != null && id.equals(order.getId());
     }
 

@@ -28,6 +28,9 @@ public class OrderEventPublisher {
                                 .unitPrice(item.getUnitPrice())
                                 .build())
                         .toList())
+                .deliveryAddress(order.getDeliveryAddress())
+                .longitude(order.getLongitude())
+                .latitude(order.getLatitude())
                 .build();
 
         log.info("Publishing OrderCreatedEvent for Order ID: {}", order.getId());

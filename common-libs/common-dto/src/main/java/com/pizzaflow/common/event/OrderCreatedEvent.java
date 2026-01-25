@@ -18,6 +18,9 @@ public class OrderCreatedEvent {
     private Long customerId;
     private BigDecimal totalAmount;
     private List<OrderItemEvent> items;
+    private String deliveryAddress;
+    private Double longitude;
+    private Double latitude;
     private LocalDateTime createdAt;
 
     @Data

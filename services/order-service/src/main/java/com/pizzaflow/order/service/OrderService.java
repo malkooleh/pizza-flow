@@ -33,6 +33,9 @@ public class OrderService {
         Order order = Order.builder()
                 .customerId(request.getCustomerId())
                 .status(OrderStatus.PENDING)
+                .deliveryAddress(request.getDeliveryAddress())
+                .longitude(request.getLongitude())
+                .latitude(request.getLatitude())
                 .build();
 
         List<OrderItem> items = request.getItems().stream()

@@ -25,6 +25,7 @@ public class KitchenService {
     private final KitchenRepository kitchenRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final org.springframework.kafka.core.KafkaTemplate<String, Object> kafkaTemplate;
 
     private static final String REDIS_KEY_ACTIVE_ORDERS = "kitchen:active_orders";
 
@@ -35,7 +36,7 @@ public class KitchenService {
         }
 
         log.info("Creating Kitchen Order for Order ID: {}", event.getOrderId());
-        
+
         List<KitchenOrderItem> items = new ArrayList<>();
         items.add(new KitchenOrderItem("product-1", 1)); // Placeholder
 
@@ -63,12 +64,13 @@ public class KitchenService {
                     .map(o -> (KitchenOrderDto) o)
                     .collect(Collectors.toList());
         }
-        
+
         // 2. Fallback to DB if Redis is empty (or on cold start)
         return kitchenRepository.findAll().stream()
                 .filter(o -> o.getStatus() != KitchenStatus.COMPLETED)
                 .map(this::mapToDto)
-                .peek(dto -> redisTemplate.opsForHash().put(REDIS_KEY_ACTIVE_ORDERS, dto.getOrderId().toString(), dto)) // Repopulate Redis
+                .peek(dto -> redisTemplate.opsForHash().put(REDIS_KEY_ACTIVE_ORDERS, dto.getOrderId().toString(), dto)) // Repopulate
+                                                                                                                        // Redis
                 .collect(Collectors.toList());
     }
 
@@ -76,10 +78,10 @@ public class KitchenService {
     public KitchenOrderDto updateStatus(Long orderId, KitchenStatus newStatus) {
         KitchenOrder order = kitchenRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("Kitchen Order not found: " + orderId));
-        
+
         order.setStatus(newStatus);
         kitchenRepository.save(order);
-        
+
         // Update Redis
         if (newStatus == KitchenStatus.COMPLETED) {
             // Remove from active queue
@@ -91,7 +93,16 @@ public class KitchenService {
         }
 
         broadcastUpdate(order);
-        
+
+        if (newStatus == KitchenStatus.READY) {
+            log.info("Order {} is READY. Emitting KitchenReadyEvent.", orderId);
+            kafkaTemplate.send("kitchen.ready", orderId.toString(),
+                    com.pizzaflow.common.event.KitchenReadyEvent.builder()
+                            .orderId(orderId)
+                            .readyAt(java.time.Instant.now())
+                            .build());
+        }
+
         return mapToDto(order);
     }
 
