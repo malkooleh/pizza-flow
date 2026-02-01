@@ -1,0 +1,36 @@
+name: Java CI with Maven
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache:maven: true
+
+    - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Build and Verify
+      run: mvn clean verify -DskipTests=false
+      
+    - name: Publish Test Report
+      if: always()
+      uses: mikepenz/action-junit-report@v4
+      with:
+        report_paths: '**/target/surefire-reports/TEST-*.xml'

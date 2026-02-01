@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: pizzaflow-services
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: discovery-service
+          - name: config-service
+          - name: api-gateway
+          - name: catalog-service
+          - name: order-service
+          - name: payment-service
+          - name: kitchen-service
+          - name: booking-service
+          - name: inventory-service
+          - name: delivery-service
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/malkooleh/pizza-flow.git
+        targetRevision: HEAD
+        path: 'infrastructure/helm/services/{{name}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: pizzaflow
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
