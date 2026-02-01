@@ -1,0 +1,20 @@
+image:
+  repository: pizzaflow/api-gateway
+  tag: latest
+
+service:
+  type: LoadBalancer
+  port: 8080
+
+env:
+  SPRING_PROFILES_ACTIVE: "prod"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+  SPRING_CONFIG_IMPORT: "optional:configserver:http://config-service:8888/"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "200m"
+  limits:
+    memory: "512Mi"
+    cpu: "1000m"

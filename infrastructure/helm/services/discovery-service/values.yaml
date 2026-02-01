@@ -1,0 +1,20 @@
+image:
+  repository: pizzaflow/discovery-service
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8761
+
+env:
+  SPRING_PROFILES_ACTIVE: "prod"
+  EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+  EUREKA_CLIENT_FETCH_REGISTRY: "false"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

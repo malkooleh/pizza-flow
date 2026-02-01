@@ -1,0 +1,19 @@
+image:
+  repository: pizzaflow/config-service
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8888
+
+env:
+  SPRING_PROFILES_ACTIVE: "native" # Using native profile to read from local file or git
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

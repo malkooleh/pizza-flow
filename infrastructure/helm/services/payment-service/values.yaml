@@ -1,0 +1,23 @@
+image:
+  repository: pizzaflow/payment-service
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8083
+
+env:
+  SPRING_PROFILES_ACTIVE: "prod"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+  SPRING_CONFIG_IMPORT: "optional:configserver:http://config-service:8888/"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/payment_db"
+  SPRING_DATASOURCE_USERNAME: "postgres"
+  SPRING_DATASOURCE_PASSWORD: "password"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
