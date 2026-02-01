@@ -1,21 +1,22 @@
 package com.pizzaflow.order.service;
 
 import com.pizzaflow.order.domain.Order;
+import com.pizzaflow.order.domain.OrderEvent;
 import com.pizzaflow.order.domain.OrderItem;
 import com.pizzaflow.order.domain.OrderStatus;
 import com.pizzaflow.order.dto.CreateOrderRequest;
 import com.pizzaflow.order.exception.ResourceNotFoundException;
-import com.pizzaflow.order.domain.OrderEvent;
 import com.pizzaflow.order.producer.OrderEventPublisher;
 import com.pizzaflow.order.repository.OrderRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,9 +28,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderEventPublisher orderEventPublisher;
     private final StateMachineFactory<OrderStatus, OrderEvent> stateMachineFactory;
+    private final MeterRegistry meterRegistry;
 
     @Transactional
     public Order createOrder(CreateOrderRequest request) {
+        meterRegistry.counter("pizzaflow.orders.created").increment();
         Order order = Order.builder()
                 .customerId(request.getCustomerId())
                 .status(OrderStatus.PENDING)

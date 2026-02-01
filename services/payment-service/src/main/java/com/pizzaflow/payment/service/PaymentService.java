@@ -3,15 +3,13 @@ package com.pizzaflow.payment.service;
 import com.pizzaflow.payment.domain.Payment;
 import com.pizzaflow.payment.domain.PaymentStatus;
 import com.pizzaflow.payment.dto.PaymentResponse;
+import com.pizzaflow.payment.producer.PaymentEventPublisher;
 import com.pizzaflow.payment.repository.PaymentRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
-
-import com.pizzaflow.payment.producer.PaymentEventPublisher;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +19,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentEventPublisher eventPublisher;
     private final ExternalPaymentGateway externalGateway;
+    private final MeterRegistry meterRegistry;
 
     @Transactional
     public PaymentResponse processPayment(Long orderId, java.math.BigDecimal amount) {
@@ -28,6 +27,8 @@ public class PaymentService {
 
         // Delegate to resilient external gateway
         boolean success = externalGateway.processPayment(orderId, amount);
+
+        meterRegistry.counter("pizzaflow.payments.result", "status", success ? "approved" : "declined").increment();
 
         PaymentStatus status = success ? PaymentStatus.APPROVED : PaymentStatus.DECLINED;
 
