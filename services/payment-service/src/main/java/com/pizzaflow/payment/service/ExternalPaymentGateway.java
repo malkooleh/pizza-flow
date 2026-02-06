@@ -18,6 +18,12 @@ public class ExternalPaymentGateway {
     public boolean processPayment(Long orderId, java.math.BigDecimal amount) {
         log.info("Contacting External Payment Provider for order: {}", orderId);
 
+        // Deterministic failure for E2E testing
+        if (amount.compareTo(new java.math.BigDecimal("0.99")) == 0) {
+            log.warn("Mocking Payment Decline for E2E Test (Amount 0.99)");
+            return false;
+        }
+
         // Simulate random network delay
         try {
             Thread.sleep(random.nextInt(100, 500));
