@@ -12,7 +12,10 @@ env:
   SPRING_CONFIG_IMPORT: "optional:configserver:http://config-service:8888/"
   SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/booking_db"
   SPRING_DATASOURCE_USERNAME: "postgres"
-  SPRING_DATASOURCE_PASSWORD: "password"
+secretEnv:
+  SPRING_DATASOURCE_PASSWORD:
+    secretName: pizzaflow-infra-secrets
+    secretKey: postgres-password
 
 resources:
   requests:

@@ -80,6 +80,19 @@ affinity: {}
 env: {}
 #  KEY: "VALUE"
 
+secretEnv: {}
+#  SPRING_DATASOURCE_PASSWORD:
+#    secretName: pizzaflow-secrets
+#    secretKey: postgres-password
+
+envFrom: []
+# - secretRef:
+#     name: pizzaflow-secrets
+
 configMap:
   enabled: false
   data: {}
+
+networkPolicy:
+  enabled: false
+

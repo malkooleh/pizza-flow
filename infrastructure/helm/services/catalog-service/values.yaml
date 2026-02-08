@@ -10,7 +10,12 @@ env:
   SPRING_PROFILES_ACTIVE: "prod"
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
   SPRING_CONFIG_IMPORT: "optional:configserver:http://config-service:8888/"
-  SPRING_DATA_MONGODB_URI: "mongodb://admin:password@mongodb:27017/catalog_db?authSource=admin"
+  SPRING_DATA_MONGODB_URI: "mongodb://mongodb:27017/catalog_db?authSource=admin"
+  SPRING_DATA_MONGODB_USERNAME: "admin"
+secretEnv:
+  SPRING_DATA_MONGODB_PASSWORD:
+    secretName: pizzaflow-infra-secrets
+    secretKey: mongo-password
 
 resources:
   requests:
