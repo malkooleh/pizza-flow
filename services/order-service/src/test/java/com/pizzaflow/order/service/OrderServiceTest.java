@@ -17,7 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.access.StateMachineAccessor;
 import org.springframework.statemachine.config.StateMachineFactory;
+import org.springframework.statemachine.region.Region;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -118,11 +120,10 @@ class OrderServiceTest {
         when(stateMachine.stopReactively()).thenReturn(reactor.core.publisher.Mono.empty());
         when(stateMachine.startReactively()).thenReturn(reactor.core.publisher.Mono.empty());
 
-        org.springframework.statemachine.region.Region<OrderStatus, OrderEvent> region = mock(
-                org.springframework.statemachine.region.Region.class);
-        when(stateMachine.getStateMachineAccessor())
-                .thenReturn(mock(org.springframework.statemachine.access.StateMachineAccessor.class));
-        doNothing().when(stateMachine.getStateMachineAccessor()).doWithAllRegions(any()); // Mock void method
+        Region<OrderStatus, OrderEvent> region = mock(Region.class);
+        StateMachineAccessor accessor = mock(StateMachineAccessor.class);
+        when(stateMachine.getStateMachineAccessor()).thenReturn(accessor);
+        doNothing().when(accessor).doWithAllRegions(any());
 
         when(stateMachine.sendEvent(any(reactor.core.publisher.Mono.class)))
                 .thenReturn(reactor.core.publisher.Flux.empty());

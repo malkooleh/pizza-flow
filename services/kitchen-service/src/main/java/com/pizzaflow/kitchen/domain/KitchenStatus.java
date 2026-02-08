@@ -4,5 +4,6 @@ public enum KitchenStatus {
     QUEUED,
     PREPARING,
     READY,
-    COMPLETED
+    COMPLETED,
+    CANCELLED
 }

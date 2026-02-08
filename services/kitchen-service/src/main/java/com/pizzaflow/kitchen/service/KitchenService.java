@@ -106,6 +106,24 @@ public class KitchenService {
         return mapToDto(order);
     }
 
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        log.info("Cancelling Kitchen Order: {}", orderId);
+
+        // 1. Update DB
+        kitchenRepository.findByOrderId(orderId).ifPresent(order -> {
+            order.setStatus(KitchenStatus.CANCELLED);
+            kitchenRepository.save(order);
+
+            // 2. Remove from Redis (Active Queue)
+            redisTemplate.opsForHash().delete(REDIS_KEY_ACTIVE_ORDERS, orderId.toString());
+            log.info("Removed Order {} from Kitchen Active Queue (Redis)", orderId);
+
+            // 3. Broadcast Update
+            broadcastUpdate(order);
+        });
+    }
+
     private void broadcastUpdate(KitchenOrder order) {
         log.info("Broadcasting Kitchen Update: {}", order);
         messagingTemplate.convertAndSend("/topic/kitchen/updates", mapToDto(order));

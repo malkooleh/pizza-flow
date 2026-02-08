@@ -1,5 +1,6 @@
 package com.pizzaflow.inventory.consumer;
 
+import com.pizzaflow.common.event.OrderCancelledEvent;
 import com.pizzaflow.common.event.OrderCreatedEvent;
 import com.pizzaflow.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,16 @@ public class OrderEventConsumer {
         } catch (Exception e) {
             log.error("Failed to process order created event for order {}", event.getOrderId(), e);
             // Event will be published via Outbox in InventoryService
+        }
+    }
+
+    @KafkaListener(topics = "order.cancelled", groupId = "inventory-service-group")
+    public void handleOrderCancelled(OrderCancelledEvent event) {
+        log.info("Received Order Cancelled Event: Order ID = {}, Reason = {}", event.getOrderId(), event.getReason());
+        try {
+            inventoryService.releaseStockForOrder(event.getOrderId());
+        } catch (Exception e) {
+            log.error("Failed to release stock for order {}", event.getOrderId(), e);
         }
     }
 }

@@ -71,6 +71,9 @@ public class OrderService {
     public void processPaymentFailure(Long orderId) {
         Order order = getOrder(orderId);
         sendEvent(order, OrderEvent.PAYMENT_FAILURE);
+
+        // Compensating Transaction: Alert other services
+        orderEventPublisher.publishOrderCancelledEvent(orderId, "Payment Failed");
     }
 
     private void sendEvent(Order order, OrderEvent event) {

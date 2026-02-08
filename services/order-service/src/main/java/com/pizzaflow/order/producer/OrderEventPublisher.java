@@ -1,5 +1,6 @@
 package com.pizzaflow.order.producer;
 
+import com.pizzaflow.common.event.OrderCancelledEvent;
 import com.pizzaflow.common.event.OrderCreatedEvent;
 import com.pizzaflow.order.domain.Order;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,17 @@ public class OrderEventPublisher {
 
         log.info("Publishing OrderCreatedEvent for Order ID: {}", order.getId());
         kafkaTemplate.send(TOPIC_ORDER_CREATED, String.valueOf(order.getId()), event);
+    }
+
+    public void publishOrderCancelledEvent(Long orderId, String reason) {
+        OrderCancelledEvent event = OrderCancelledEvent
+                .builder()
+                .orderId(orderId)
+                .reason(reason)
+                .cancelledAt(java.time.LocalDateTime.now())
+                .build();
+
+        log.info("Publishing OrderCancelledEvent for Order ID: {}", orderId);
+        kafkaTemplate.send("order.cancelled", String.valueOf(orderId), event);
     }
 }
