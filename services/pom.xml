@@ -23,6 +23,7 @@
         <module>booking-service</module>
         <module>inventory-service</module>
         <module>delivery-service</module>
+        <module>notification-service</module>
 
         <!--        Not implemented yet-->
         <!--<module>identity-service</module>-->

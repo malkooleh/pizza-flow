@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: pizzaflow/notification-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 8088
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+env:
+  SPRING_PROFILES_ACTIVE: "kubernetes"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  SPRING_MAIL_HOST: "mailpit"
+  SPRING_MAIL_PORT: "1025"
+  # Config Server
+  SPRING_CONFIG_IMPORT: "optional:configserver:http://config-service:8888/"

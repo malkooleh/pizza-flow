@@ -43,5 +43,34 @@ Hardening the system for production-grade security.
 -   **mTLS Preparation**: Added `sidecar.istio.io/inject: "true"` toggle placeholder in the common `deployment.yaml` to support service meshes.
 -   **NetworkPolicy**: Implemented a default `NetworkPolicy` template in the common chart that restricts ingress traffic to the `api-gateway` and `prometheus` by default, preventing unauthorized inter-service lateral movement.
 
-## Next Step in Phase 6: 6.3 Notification Service 📧
-We will now create a new microservice to handle order notifications.
+## ✅ 6.3 Notification Service 📧
+Implemented a dedicated service to handle user notifications via Email and simulated Slack integration.
+
+-   **Service Structure**: Created `notification-service` as a new microservice.
+-   **Events Consumed**:
+    -   `order.created`: Sends Order Confirmation Email & Slack Alert.
+    -   `payment.completed`: Sends Payment Receipt Email.
+    -   `order.cancelled`: Sends Cancellation Notice Email & Slack Alert.
+    -   `kitchen.ready`: Sends "Order Ready" Email & Slack Alert.
+    -   `delivery.assigned`: Sends Courier Update Email & Slack Alert.
+-   **Adapters**:
+    -   **EmailAdapter**: Uses `Spring Boot Mail` connected to the local `Mailpit` container (Port 1025).
+    -   **SlackAdapter**: A simulation adapter that logs formatted messages to the console (extensible for real Webhooks).
+
+### 🏗️ Infrastructure & Standards
+To ensure consistency across the microservices landscape, we applied the following refinements:
+-   **Maven Hierarchy**: `notification-service` is integrated as a child of the `services/pom.xml`, sharing common dependencies and configurations.
+-   **Standardized Dockerfiles**: Implemented a **multi-stage build** pattern for all services. This reduces image size, improves security (non-root users), and ensures the production image only contains the necessary runtime artifacts.
+-   **Clean Orchestration**: Restored `infrastructure/docker/compose.yaml` to its **Infrastructure-Only** purpose (Postgres, Kafka, ELK). Business services are orchestrated via Helm in Kubernetes, maintaining a clear separation of concerns.
+
+## 🏁 Summary of Phase 6
+Phase 6 has successfully transitioned PizzaFlow from a functional MVP to a **Production-Grade Microservices Ecosystem**:
+
+| Pillar | Accomplishment |
+| :--- | :--- |
+| **Resilience** | Saga pattern with compensating transactions for atomicity. |
+| **Reliability** | Background cleanup schedulers for consistency. |
+| **Security** | Centralized Kubernetes Secrets and Zero-Trust NetworkPolicies. |
+| **Observability** | Integrated Notification Service for real-time user engagement. |
+
+The system is now robust, secure, and ready for the next level of intelligent features.
