@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,13 +70,12 @@ public class KitchenService {
         return kitchenRepository.findAll().stream()
                 .filter(o -> o.getStatus() != KitchenStatus.COMPLETED)
                 .map(this::mapToDto)
-                .peek(dto -> redisTemplate.opsForHash().put(REDIS_KEY_ACTIVE_ORDERS, dto.getOrderId().toString(), dto)) // Repopulate
-                                                                                                                        // Redis
+                .peek(dto -> redisTemplate.opsForHash().put(REDIS_KEY_ACTIVE_ORDERS, dto.getOrderId().toString(), dto)) // Repopulate Redis
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public KitchenOrderDto updateStatus(Long orderId, KitchenStatus newStatus) {
+    public KitchenOrderDto updateStatus(UUID orderId, KitchenStatus newStatus) {
         KitchenOrder order = kitchenRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("Kitchen Order not found: " + orderId));
 
@@ -107,7 +107,7 @@ public class KitchenService {
     }
 
     @Transactional
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(UUID orderId) {
         log.info("Cancelling Kitchen Order: {}", orderId);
 
         // 1. Update DB

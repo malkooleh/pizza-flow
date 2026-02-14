@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliveryAssignedEvent {
-    private Long orderId;
+    private UUID orderId;
     private Long courierId;
     private String courierName;
     private Instant assignedAt;

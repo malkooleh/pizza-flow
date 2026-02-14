@@ -1,5 +1,6 @@
 package com.pizzaflow.order.service;
 
+import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.order.domain.Order;
 import com.pizzaflow.order.domain.OrderEvent;
 import com.pizzaflow.order.domain.OrderItem;
@@ -20,6 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +35,18 @@ public class OrderService {
     @Transactional
     public Order createOrder(CreateOrderRequest request) {
         meterRegistry.counter("pizzaflow.orders.created").increment();
+
+        // Parse address string into Value Object (MVP: basic split or default)
+        // Ideally CreateOrderRequest should accept structured address.
+        // For now, we wrap the string in the new Address record.
+        Address addressVo = new Address(
+                request.getDeliveryAddress(), "", "", "", "" // TODO: Update Request DTO to support full address
+        );
+
         Order order = Order.builder()
                 .customerId(request.getCustomerId())
                 .status(OrderStatus.PENDING)
-                .deliveryAddress(request.getDeliveryAddress())
+                .deliveryAddress(addressVo)
                 .longitude(request.getLongitude())
                 .latitude(request.getLatitude())
                 .build();
@@ -62,13 +72,13 @@ public class OrderService {
     }
 
     @Transactional
-    public void processPaymentSuccess(Long orderId) {
+    public void processPaymentSuccess(UUID orderId) {
         Order order = getOrder(orderId);
         sendEvent(order, OrderEvent.PAYMENT_SUCCESS);
     }
 
     @Transactional
-    public void processPaymentFailure(Long orderId) {
+    public void processPaymentFailure(UUID orderId) {
         Order order = getOrder(orderId);
         sendEvent(order, OrderEvent.PAYMENT_FAILURE);
 
@@ -105,7 +115,7 @@ public class OrderService {
         return sm;
     }
 
-    public Order getOrder(Long id) {
+    public Order getOrder(UUID id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
     }

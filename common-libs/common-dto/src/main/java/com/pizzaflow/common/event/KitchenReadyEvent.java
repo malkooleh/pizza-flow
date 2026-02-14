@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class KitchenReadyEvent {
-    private Long orderId;
+    private UUID orderId;
     private Instant readyAt;
     // For geospatial lookup, we might need the restaurant location or delivery
     // address

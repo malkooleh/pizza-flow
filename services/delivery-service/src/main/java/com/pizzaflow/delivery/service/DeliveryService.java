@@ -1,6 +1,11 @@
 package com.pizzaflow.delivery.service;
 
-import com.pizzaflow.delivery.domain.*;
+import com.pizzaflow.common.dto.Address;
+import com.pizzaflow.common.event.DeliveryAssignedEvent;
+import com.pizzaflow.delivery.domain.Courier;
+import com.pizzaflow.delivery.domain.CourierStatus;
+import com.pizzaflow.delivery.domain.Delivery;
+import com.pizzaflow.delivery.domain.DeliveryStatus;
 import com.pizzaflow.delivery.repository.CourierRepository;
 import com.pizzaflow.delivery.repository.DeliveryRepository;
 import com.pizzaflow.delivery.repository.DeliveryZoneRepository;
@@ -10,11 +15,12 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +30,13 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final CourierRepository courierRepository;
     private final DeliveryZoneRepository deliveryZoneRepository;
-    private final org.springframework.kafka.core.KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
     @Transactional
-    public Delivery createDelivery(Long orderId, String address, double lon, double lat) {
+    public Delivery createDelivery(UUID orderId, Address address, double lon, double lat) {
         Point location = geometryFactory.createPoint(new Coordinate(lon, lat));
-        
+
         // Check if within delivery zone
         deliveryZoneRepository.findZoneForPoint(location)
                 .orElseThrow(() -> new RuntimeException("Address is outside delivery zones"));
@@ -46,7 +52,7 @@ public class DeliveryService {
     }
 
     @Transactional
-    public void assignCourier(Long orderId) {
+    public void assignCourier(UUID orderId) {
         Delivery delivery = deliveryRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("Delivery not found for order: " + orderId));
 
@@ -66,15 +72,15 @@ public class DeliveryService {
             delivery.setStatus(DeliveryStatus.ASSIGNED);
             delivery.setAssignedAt(Instant.now());
             deliveryRepository.save(delivery);
-            
+
             log.info("Emitting DeliveryAssignedEvent for order {}", orderId);
-            kafkaTemplate.send("delivery.assigned", orderId.toString(),
-                com.pizzaflow.common.event.DeliveryAssignedEvent.builder()
+            DeliveryAssignedEvent event = DeliveryAssignedEvent.builder()
                     .orderId(orderId)
                     .courierId(nearestCourier.getId())
                     .courierName(nearestCourier.getName())
                     .assignedAt(delivery.getAssignedAt())
-                    .build());
+                    .build();
+            kafkaTemplate.send("delivery.assigned", orderId.toString(), event);
         } else {
             log.warn("No available couriers for delivery of order {}", orderId);
             // In a real system, we might retry or queue this
@@ -96,17 +102,17 @@ public class DeliveryService {
     public void updateCourierLocation(Long courierId, double lon, double lat) {
         Courier courier = courierRepository.findById(courierId)
                 .orElseThrow(() -> new RuntimeException("Courier not found: " + courierId));
-        
+
         Point location = geometryFactory.createPoint(new Coordinate(lon, lat));
         courier.setCurrentLocation(location);
         courierRepository.save(courier);
     }
 
     @Transactional
-    public void updateDeliveryStatus(Long orderId, DeliveryStatus status) {
+    public void updateDeliveryStatus(UUID orderId, DeliveryStatus status) {
         Delivery delivery = deliveryRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("Delivery not found for order: " + orderId));
-        
+
         delivery.setStatus(status);
         if (status == DeliveryStatus.PICKED_UP) {
             delivery.setPickedUpAt(Instant.now());

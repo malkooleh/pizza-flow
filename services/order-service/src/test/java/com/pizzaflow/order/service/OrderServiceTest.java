@@ -23,6 +23,7 @@ import org.springframework.statemachine.region.Region;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -60,6 +61,8 @@ class OrderServiceTest {
     @Test
     void createOrder_ShouldSaveOrderAndPublishEvent() {
         // Arrange
+        UUID orderId = UUID.randomUUID();
+
         CreateOrderRequest request = new CreateOrderRequest();
         request.setCustomerId(1L);
         request.setDeliveryAddress("123 Pizza St");
@@ -73,7 +76,7 @@ class OrderServiceTest {
         request.setItems(List.of(itemDto));
 
         Order savedOrder = Order.builder()
-                .id(100L)
+                .id(orderId)
                 .customerId(1L)
                 .status(OrderStatus.PENDING)
                 .totalAmount(new BigDecimal("30.00")) // 15 * 2
@@ -86,7 +89,7 @@ class OrderServiceTest {
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(100L);
+        assertThat(result.getId()).isEqualTo(orderId);
 
         // Verify Repository interaction
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
@@ -97,7 +100,7 @@ class OrderServiceTest {
         assertThat(capturedOrder.getTotalAmount()).isEqualByComparingTo("30.00");
         assertThat(capturedOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
         assertThat(capturedOrder.getItems()).hasSize(1);
-        assertThat(capturedOrder.getItems().get(0).getUnitPrice()).isEqualByComparingTo("15.00");
+        assertThat(capturedOrder.getItems().getFirst().getUnitPrice()).isEqualByComparingTo("15.00");
 
         // Verify Event Publishing
         verify(orderEventPublisher).publishOrderCreatedEvent(savedOrder);
@@ -110,7 +113,7 @@ class OrderServiceTest {
     @Test
     void processPaymentSuccess_ShouldTransitionToPaid() {
         // Arrange
-        Long orderId = 1L;
+        UUID orderId = UUID.randomUUID();
         Order order = Order.builder().id(orderId).status(OrderStatus.PENDING).build();
 
         when(orderRepository.findById(orderId)).thenReturn(java.util.Optional.of(order));

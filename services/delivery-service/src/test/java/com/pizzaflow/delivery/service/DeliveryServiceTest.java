@@ -1,5 +1,6 @@
 package com.pizzaflow.delivery.service;
 
+import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.common.event.DeliveryAssignedEvent;
 import com.pizzaflow.delivery.domain.*;
 import com.pizzaflow.delivery.repository.CourierRepository;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,12 +49,10 @@ class DeliveryServiceTest {
     @Test
     void createDelivery_ShouldSaveDelivery_WhenAddressInZone() {
         // Arrange
-        Long orderId = 1L;
-        String address = "123 Main St";
+        UUID orderId = UUID.randomUUID();
+        Address address = new Address("123 Main St","New York", "NY", "10001", "USA");
         double lon = 10.0;
         double lat = 20.0;
-        // Point location = geometryFactory.createPoint(new Coordinate(lon, lat)); //
-        // Unused explicitly in simplified test
 
         // Mock Zone check to succeed
         when(deliveryZoneRepository.findZoneForPoint(any(Point.class))).thenReturn(Optional.of(new DeliveryZone()));
@@ -73,7 +73,7 @@ class DeliveryServiceTest {
     @Test
     void assignCourier_ShouldAssignNearestCourier_WhenAvailable() {
         // Arrange
-        Long orderId = 1L;
+        UUID orderId = UUID.randomUUID();
         Point location = geometryFactory.createPoint(new Coordinate(10.0, 20.0));
 
         Delivery delivery = Delivery.builder()
@@ -106,13 +106,13 @@ class DeliveryServiceTest {
         verify(deliveryRepository).save(delivery);
 
         // 3. Verify Kafka Event
-        verify(kafkaTemplate).send(eq("delivery.assigned"), eq("1"), any(DeliveryAssignedEvent.class));
+        verify(kafkaTemplate).send(eq("delivery.assigned"), eq(orderId.toString()), any(DeliveryAssignedEvent.class));
     }
 
     @Test
     void updateDeliveryStatus_ShouldFreeCourier_WhenDelivered() {
         // Arrange
-        Long orderId = 1L;
+        UUID orderId = UUID.randomUUID();
         Courier courier = Courier.builder().id(200L).status(CourierStatus.BUSY).build();
         Delivery delivery = Delivery.builder()
                 .id(100L)

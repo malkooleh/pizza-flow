@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +50,7 @@ class PaymentServiceTest {
     @Test
     void processPayment_ShouldApprove_WhenGatewayReturnsSuccess() {
         // Arrange
-        Long orderId = 1L;
+        UUID orderId = UUID.randomUUID();
         BigDecimal amount = new BigDecimal("25.00");
 
         when(externalGateway.processPayment(orderId, amount)).thenReturn(true);
@@ -79,7 +80,7 @@ class PaymentServiceTest {
     @Test
     void processPayment_ShouldDecline_WhenGatewayReturnsFailure() {
         // Arrange
-        Long orderId = 1L;
+        UUID orderId = UUID.randomUUID();
         BigDecimal amount = new BigDecimal("25.00");
 
         when(externalGateway.processPayment(orderId, amount)).thenReturn(false);

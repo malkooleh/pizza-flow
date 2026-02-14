@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,7 +47,7 @@ class InventoryServiceTest {
     @Test
     void reserveStockForOrder_ShouldReserveStockAndPublishEvent_WhenStockAvailable() throws Exception {
         // Arrange
-        Long orderId = 123L;
+        UUID orderId = UUID.randomUUID();
         String productId = "pizza-1";
         Map<String, Integer> productQuantities = Map.of(productId, 2);
 
@@ -83,7 +84,7 @@ class InventoryServiceTest {
     @Test
     void reserveStockForOrder_ShouldThrowExceptionAndPublishFailure_WhenInsufficientStock() throws Exception {
         // Arrange
-        Long orderId = 124L;
+        UUID orderId = UUID.randomUUID();
         String productId = "pizza-1";
         Map<String, Integer> productQuantities = Map.of(productId, 20); // Requesting 20, have 10
 

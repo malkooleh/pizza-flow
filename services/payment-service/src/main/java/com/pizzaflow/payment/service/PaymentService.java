@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +24,7 @@ public class PaymentService {
     private final MeterRegistry meterRegistry;
 
     @Transactional
-    public PaymentResponse processPayment(Long orderId, java.math.BigDecimal amount) {
+    public PaymentResponse processPayment(UUID orderId, java.math.BigDecimal amount) {
         log.info("Processing payment for order: {} amount: {}", orderId, amount);
 
         // Delegate to resilient external gateway
@@ -53,7 +55,7 @@ public class PaymentService {
         return mapToResponse(savedPayment);
     }
 
-    public PaymentResponse getPaymentByOrderId(Long orderId) {
+    public PaymentResponse getPaymentByOrderId(UUID orderId) {
         return paymentRepository.findByOrderId(orderId)
                 .map(this::mapToResponse)
                 .orElseThrow(() -> new RuntimeException("Payment not found for order: " + orderId));

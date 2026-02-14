@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PaymentEvent {
     private Long paymentId;
-    private Long orderId;
+    private UUID orderId;
     private String status; // "APPROVED", "DECLINED", "FAILED"
     private BigDecimal amount;
     private LocalDateTime timestamp;

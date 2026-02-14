@@ -32,6 +32,7 @@ public class DeliveryZone {
     private Polygon area;
 
     @Column(name = "is_active", nullable = false)
+    @Builder.Default
     private Boolean isActive = true;
 
     @CreatedDate
@@ -44,8 +45,10 @@ public class DeliveryZone {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DeliveryZone that)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof DeliveryZone that))
+            return false;
         return Objects.equals(id, that.id);
     }
 

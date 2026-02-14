@@ -1,9 +1,15 @@
 package com.pizzaflow.notification.service;
 
+import java.util.UUID;
+
 public interface NotificationService {
-    void sendOrderConfirmation(String email, Long orderId);
-    void sendPaymentConfirmation(String email, Long orderId, double amount);
-    void sendOrderCancellation(String email, Long orderId, String reason);
-    void sendOrderReady(String email, Long orderId);
-    void sendDeliveryUpdate(String email, Long orderId, String courierName);
+    void sendOrderConfirmation(String email, UUID orderId);
+
+    void sendPaymentConfirmation(String email, UUID orderId, double amount);
+
+    void sendOrderCancellation(String email, UUID orderId, String reason);
+
+    void sendOrderReady(String email, UUID orderId);
+
+    void sendDeliveryUpdate(String email, UUID orderId, String courierName);
 }

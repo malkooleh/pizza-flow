@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,8 +20,9 @@ class KitchenServiceIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldCreateOrderAndPersistToRedisAuthPostgres() {
         // Arrange
+        UUID orderId = UUID.randomUUID();
         PaymentEvent event = new PaymentEvent();
-        event.setOrderId(999L);
+        event.setOrderId(orderId);
         event.setStatus("APPROVED");
 
         // Act
@@ -30,13 +32,13 @@ class KitchenServiceIntegrationTest extends AbstractIntegrationTest {
         // 1. Verify Redis (Immediate Visibility for KDS)
         List<KitchenOrderDto> activeOrders = kitchenService.getActiveQueue();
         assertThat(activeOrders).hasSize(1);
-        assertThat(activeOrders.get(0).getOrderId()).isEqualTo(999L);
-        assertThat(activeOrders.get(0).getStatus()).isEqualTo(KitchenStatus.QUEUED);
+        assertThat(activeOrders.getFirst().getOrderId()).isEqualTo(orderId);
+        assertThat(activeOrders.getFirst().getStatus()).isEqualTo(KitchenStatus.QUEUED);
 
         // 2. Verify State Transition Updates Redis
-        kitchenService.updateStatus(999L, KitchenStatus.PREPARING);
+        kitchenService.updateStatus(orderId, KitchenStatus.PREPARING);
 
-        KitchenOrderDto updated = kitchenService.getActiveQueue().get(0);
+        KitchenOrderDto updated = kitchenService.getActiveQueue().getFirst();
         assertThat(updated.getStatus()).isEqualTo(KitchenStatus.PREPARING);
     }
 }

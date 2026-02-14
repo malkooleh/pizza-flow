@@ -6,11 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface StockReservationRepository extends JpaRepository<StockReservation, Long> {
-    
-    List<StockReservation> findByOrderId(Long orderId);
-    
-    Optional<StockReservation> findByOrderIdAndInventoryItemId(Long orderId, Long inventoryItemId);
+
+    List<StockReservation> findByOrderId(UUID orderId);
+
+    Optional<StockReservation> findByOrderIdAndInventoryItemId(UUID orderId, Long inventoryItemId);
 }

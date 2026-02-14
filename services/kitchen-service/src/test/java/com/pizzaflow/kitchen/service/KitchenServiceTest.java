@@ -17,6 +17,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,8 +49,9 @@ class KitchenServiceTest {
     @Test
     void processPaymentEvent_ShouldCreateOrderAndAddToQueue() {
         // Arrange
+        UUID orderId = UUID.randomUUID();
         PaymentEvent event = new PaymentEvent();
-        event.setOrderId(101L);
+        event.setOrderId(orderId);
         event.setStatus("APPROVED");
 
         when(redisTemplate.opsForHash()).thenReturn(hashOperations);
@@ -63,11 +65,11 @@ class KitchenServiceTest {
         verify(kitchenRepository).save(orderCaptor.capture());
 
         KitchenOrder savedOrder = orderCaptor.getValue();
-        assertThat(savedOrder.getOrderId()).isEqualTo(101L);
+        assertThat(savedOrder.getOrderId()).isEqualTo(orderId);
         assertThat(savedOrder.getStatus()).isEqualTo(KitchenStatus.QUEUED);
 
         // Verify Redis
-        verify(hashOperations).put(eq("kitchen:active_orders"), eq("101"), any(KitchenOrderDto.class));
+        verify(hashOperations).put(eq("kitchen:active_orders"), eq(orderId.toString()), any(KitchenOrderDto.class));
 
         // Verify WebSocket Broadcast
         verify(messagingTemplate).convertAndSend(eq("/topic/kitchen/updates"), any(KitchenOrderDto.class));
@@ -76,7 +78,7 @@ class KitchenServiceTest {
     @Test
     void updateStatus_ShouldUpdateStatusAndPublishKafkaEvent_WhenReady() {
         // Arrange
-        Long orderId = 101L;
+        UUID orderId = UUID.randomUUID();
         KitchenOrder existingOrder = KitchenOrder.builder()
                 .id(1L)
                 .orderId(orderId)
@@ -96,9 +98,9 @@ class KitchenServiceTest {
         verify(kitchenRepository).save(any(KitchenOrder.class));
 
         // Verify Redis Update
-        verify(hashOperations).put(eq("kitchen:active_orders"), eq("101"), any(KitchenOrderDto.class));
+        verify(hashOperations).put(eq("kitchen:active_orders"), eq(orderId.toString()), any(KitchenOrderDto.class));
 
         // Verify Kafka Event
-        verify(kafkaTemplate).send(eq("kitchen.ready"), eq("101"), any());
+        verify(kafkaTemplate).send(eq("kitchen.ready"), eq(orderId.toString()), any());
     }
 }

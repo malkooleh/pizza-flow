@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/kitchen")
@@ -22,7 +23,10 @@ public class KitchenController {
     }
 
     @PatchMapping("/orders/{orderId}/status")
-    public ResponseEntity<KitchenOrderDto> updateStatus(@PathVariable Long orderId, @RequestParam KitchenStatus status) {
+    public ResponseEntity<KitchenOrderDto> updateStatus(
+            @PathVariable UUID orderId,
+            @RequestParam KitchenStatus status
+    ) {
         return ResponseEntity.ok(kitchenService.updateStatus(orderId, status));
     }
 }

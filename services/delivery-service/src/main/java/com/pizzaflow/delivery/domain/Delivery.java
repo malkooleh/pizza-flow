@@ -1,5 +1,6 @@
 package com.pizzaflow.delivery.domain;
 
+import com.pizzaflow.common.dto.Address;
 import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
@@ -9,14 +10,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "delivery")
 @EntityListeners(AuditingEntityListener.class)
 public class Delivery {
 
@@ -24,8 +27,8 @@ public class Delivery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_id", nullable = false, unique = true)
-    private Long orderId;
+    @Column(name = "order_id", nullable = false, unique = true, columnDefinition = "uuid")
+    private UUID orderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courier_id")
@@ -39,8 +42,8 @@ public class Delivery {
     @Column(name = "delivery_location", columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point deliveryLocation;
 
-    @Column(name = "delivery_address", nullable = false)
-    private String deliveryAddress;
+    @Embedded
+    private Address deliveryAddress;
 
     @Column(name = "assigned_at")
     private Instant assignedAt;
@@ -61,8 +64,10 @@ public class Delivery {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Delivery delivery)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Delivery delivery))
+            return false;
         return Objects.equals(id, delivery.id);
     }
 

@@ -10,13 +10,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "courier")
 @EntityListeners(AuditingEntityListener.class)
 public class Courier {
 
@@ -44,8 +45,10 @@ public class Courier {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Courier courier)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Courier courier))
+            return false;
         return Objects.equals(id, courier.id);
     }
 

@@ -1,5 +1,6 @@
 package com.pizzaflow.order.domain;
 
+import com.pizzaflow.common.dto.Address;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
@@ -23,8 +25,8 @@ import java.util.List;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(columnDefinition = "uuid")
+    private UUID id;
 
     @Column(name = "customer_id", nullable = false)
     private Long customerId;
@@ -40,8 +42,15 @@ public class Order {
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
-    @Column(name = "delivery_address")
-    private String deliveryAddress;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "street", column = @Column(name = "delivery_street")),
+            @AttributeOverride(name = "city", column = @Column(name = "delivery_city")),
+            @AttributeOverride(name = "state", column = @Column(name = "delivery_state")),
+            @AttributeOverride(name = "zipCode", column = @Column(name = "delivery_zip")),
+            @AttributeOverride(name = "country", column = @Column(name = "delivery_country"))
+    })
+    private Address deliveryAddress;
 
     @Column(name = "longitude")
     private Double longitude;
@@ -73,6 +82,9 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
         if (status == null) {
             status = OrderStatus.PENDING;
         }

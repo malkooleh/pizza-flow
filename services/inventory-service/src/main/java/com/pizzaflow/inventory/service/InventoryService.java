@@ -15,9 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +57,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public void reserveStockForOrder(Long orderId, Map<String, Integer> productQuantities) {
+    public void reserveStockForOrder(UUID orderId, Map<String, Integer> productQuantities) {
         log.info("Attempting to reserve stock for order: {}", orderId);
 
         // Check if stock is already reserved
@@ -80,8 +80,8 @@ public class InventoryService {
                 if (!item.canReserve(quantity)) {
                     throw new InsufficientStockException(
                             "Insufficient stock for product: " + productId +
-                                    ". Available: " + item.getAvailableQuantity() +
-                                    ", Requested: " + quantity);
+                            ". Available: " + item.getAvailableQuantity() +
+                            ", Requested: " + quantity);
                 }
 
                 item.reserve(quantity);
@@ -122,7 +122,7 @@ public class InventoryService {
      * Release reserved stock for a cancelled or failed order.
      * This method is called when an order is cancelled before fulfillment,
      * returning the reserved quantity back to available stock.
-     *
+     * <p>
      * FUTURE INTEGRATION POINTS:
      * - Kafka Consumer listening to 'order.cancelled' events
      * - Payment failure compensation in the Saga pattern
@@ -131,7 +131,7 @@ public class InventoryService {
      * @param orderId The ID of the order to release stock for
      */
     @Transactional
-    public void releaseStockForOrder(Long orderId) {
+    public void releaseStockForOrder(UUID orderId) {
         log.info("Releasing stock for order: {}", orderId);
 
         List<StockReservation> reservations = stockReservationRepository.findByOrderId(orderId);
@@ -159,7 +159,7 @@ public class InventoryService {
      * 'committed',
      * and reducing the total quantity. Called when an order is successfully
      * delivered.
-     *
+     * <p>
      * FUTURE INTEGRATION POINTS:
      * - Kafka Consumer listening to 'delivery.completed' events
      * - Kitchen completion handler (for pickup orders)
@@ -168,7 +168,7 @@ public class InventoryService {
      * @param orderId The ID of the order to commit stock for
      */
     @Transactional
-    public void commitStockForOrder(Long orderId) {
+    public void commitStockForOrder(UUID orderId) {
         log.info("Committing stock for order: {}", orderId);
 
         List<StockReservation> reservations = stockReservationRepository.findByOrderId(orderId);

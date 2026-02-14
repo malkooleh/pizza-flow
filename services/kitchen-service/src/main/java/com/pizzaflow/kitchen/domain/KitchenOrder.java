@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "kitchen_orders")
@@ -27,8 +28,8 @@ public class KitchenOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private Long orderId;
+    @Column(nullable = false, unique = true, columnDefinition = "uuid")
+    private UUID orderId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -47,8 +48,10 @@ public class KitchenOrder {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         KitchenOrder that = (KitchenOrder) o;
         return id != null && Objects.equals(id, that.id);
     }

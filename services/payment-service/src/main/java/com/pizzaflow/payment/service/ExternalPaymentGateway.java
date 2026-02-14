@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -15,7 +16,7 @@ public class ExternalPaymentGateway {
 
     @Retry(name = "externalPayment", fallbackMethod = "processPaymentFallback")
     @Bulkhead(name = "externalPayment", type = Bulkhead.Type.SEMAPHORE)
-    public boolean processPayment(Long orderId, java.math.BigDecimal amount) {
+    public boolean processPayment(UUID orderId, java.math.BigDecimal amount) {
         log.info("Contacting External Payment Provider for order: {}", orderId);
 
         // Deterministic failure for E2E testing
@@ -41,7 +42,7 @@ public class ExternalPaymentGateway {
         return true;
     }
 
-    public boolean processPaymentFallback(Long orderId, java.math.BigDecimal amount, Throwable t) {
+    public boolean processPaymentFallback(UUID orderId, java.math.BigDecimal amount, Throwable t) {
         log.error("All retries failed for transaction {}. Reason: {}", orderId, t.getMessage());
         return false; // Transaction failed after retries
     }
