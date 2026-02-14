@@ -2,7 +2,7 @@ name: Docker Build & Publish
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 env:
   REGISTRY: ghcr.io
@@ -27,7 +27,8 @@ jobs:
           "kitchen-service",
           "booking-service",
           "inventory-service",
-          "delivery-service"
+          "delivery-service",
+          "notification-service"
         ]
 
     steps:
