@@ -73,15 +73,15 @@ public class InventoryService {
                 String productId = entry.getKey();
                 Integer quantity = entry.getValue();
 
-                InventoryItem item = inventoryItemRepository.findByProductId(productId)
+                InventoryItem item = inventoryItemRepository.findByProductIdWithLock(productId)
                         .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + productId));
 
                 // Check availability and reserve
                 if (!item.canReserve(quantity)) {
                     throw new InsufficientStockException(
                             "Insufficient stock for product: " + productId +
-                            ". Available: " + item.getAvailableQuantity() +
-                            ", Requested: " + quantity);
+                                    ". Available: " + item.getAvailableQuantity() +
+                                    ", Requested: " + quantity);
                 }
 
                 item.reserve(quantity);
