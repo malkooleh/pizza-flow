@@ -1,7 +1,7 @@
 package com.pizzaflow.order.controller;
 
-import com.pizzaflow.order.domain.Order;
 import com.pizzaflow.order.dto.CreateOrderRequest;
+import com.pizzaflow.order.dto.OrderResponse;
 import com.pizzaflow.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +20,19 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
-        Order createdOrder = orderService.createOrder(request);
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+        OrderResponse createdOrder = orderService.createOrder(request);
         return ResponseEntity.created(URI.create("/api/v1/orders/" + createdOrder.getId()))
                 .body(createdOrder);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrder(@PathVariable UUID id) {
-        return ResponseEntity.ok(orderService.getOrder(id));
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID id) {
+        return ResponseEntity.ok(orderService.getOrderResponse(id));
     }
 
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<Order>> getCustomerOrders(@PathVariable Long customerId) {
-        return ResponseEntity.ok(orderService.getOrdersByCustomer(customerId));
+    public ResponseEntity<List<OrderResponse>> getCustomerOrders(@PathVariable Long customerId) {
+        return ResponseEntity.ok(orderService.getOrdersResponseByCustomer(customerId));
     }
 }

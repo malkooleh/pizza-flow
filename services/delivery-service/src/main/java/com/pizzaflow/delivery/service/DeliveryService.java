@@ -126,6 +126,11 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
     }
 
+    public Delivery getDelivery(UUID orderId) {
+        return deliveryRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Delivery not found for order: " + orderId));
+    }
+
     public GeometryFactory getGeometryFactory() {
         return geometryFactory;
     }

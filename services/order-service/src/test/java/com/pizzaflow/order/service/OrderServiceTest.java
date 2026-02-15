@@ -1,10 +1,12 @@
 package com.pizzaflow.order.service;
 
+import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.order.domain.Order;
 import com.pizzaflow.order.domain.OrderEvent;
 import com.pizzaflow.order.domain.OrderStatus;
 import com.pizzaflow.order.dto.CreateOrderRequest;
 import com.pizzaflow.order.dto.OrderItemDto;
+import com.pizzaflow.order.dto.OrderResponse;
 import com.pizzaflow.order.producer.OrderEventPublisher;
 import com.pizzaflow.order.repository.OrderRepository;
 import io.micrometer.core.instrument.Counter;
@@ -65,7 +67,7 @@ class OrderServiceTest {
 
         CreateOrderRequest request = new CreateOrderRequest();
         request.setCustomerId(1L);
-        request.setDeliveryAddress("123 Pizza St");
+        request.setDeliveryAddress(new Address("123 Pizza St", "New York", "NY", "10001", "USA"));
         request.setLatitude(40.7128);
         request.setLongitude(-74.0060);
 
@@ -85,7 +87,7 @@ class OrderServiceTest {
         when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
 
         // Act
-        Order result = orderService.createOrder(request);
+        OrderResponse result = orderService.createOrder(request);
 
         // Assert
         assertThat(result).isNotNull();

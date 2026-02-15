@@ -1,9 +1,11 @@
 package com.pizzaflow.order.dto;
 
+import com.pizzaflow.common.dto.Address;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
 import java.util.List;
 
 @Data
@@ -15,7 +17,9 @@ public class CreateOrderRequest {
     @Valid
     private List<OrderItemDto> items;
 
-    private String deliveryAddress;
+    @Valid
+    private Address deliveryAddress;
+
     private Double longitude;
     private Double latitude;
 }

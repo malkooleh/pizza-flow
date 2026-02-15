@@ -1,5 +1,6 @@
 package com.pizzaflow.delivery.dto;
 
+import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.delivery.domain.DeliveryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class DeliveryResponse {
     private Long courierId;
     private String courierName;
     private DeliveryStatus status;
-    private String deliveryAddress;
+    private Address deliveryAddress;
     private Instant assignedAt;
     private Instant pickedUpAt;
     private Instant deliveredAt;

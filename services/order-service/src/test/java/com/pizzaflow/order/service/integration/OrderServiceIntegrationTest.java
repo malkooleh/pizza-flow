@@ -1,9 +1,11 @@
 package com.pizzaflow.order.service.integration;
 
+import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.order.domain.Order;
 import com.pizzaflow.order.domain.OrderStatus;
 import com.pizzaflow.order.dto.CreateOrderRequest;
 import com.pizzaflow.order.dto.OrderItemDto;
+import com.pizzaflow.order.dto.OrderResponse;
 import com.pizzaflow.order.repository.OrderRepository;
 import com.pizzaflow.order.service.OrderService;
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,7 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
         // Arrange
         CreateOrderRequest request = new CreateOrderRequest();
         request.setCustomerId(1L);
-        request.setDeliveryAddress("Integration Test St");
+        request.setDeliveryAddress(new Address("123 Pizza St", "New York", "NY", "10001", "USA"));
         request.setLatitude(0.0);
         request.setLongitude(0.0);
 
@@ -38,13 +40,13 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
         request.setItems(List.of(item));
 
         // Act
-        Order createdOrder = orderService.createOrder(request);
+        OrderResponse response = orderService.createOrder(request);
 
         // Assert
-        assertThat(createdOrder.getId()).isNotNull();
+        assertThat(response.getId()).isNotNull();
 
         // Verify Persistence
-        Order retrievedOrder = orderRepository.findById(createdOrder.getId()).orElseThrow();
+        Order retrievedOrder = orderRepository.findById(response.getId()).orElseThrow();
         assertThat(retrievedOrder.getCustomerId()).isEqualTo(1L);
         assertThat(retrievedOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
         assertThat(retrievedOrder.getItems()).hasSize(1);

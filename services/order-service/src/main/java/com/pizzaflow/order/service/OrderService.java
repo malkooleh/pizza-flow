@@ -1,11 +1,12 @@
 package com.pizzaflow.order.service;
 
-import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.order.domain.Order;
 import com.pizzaflow.order.domain.OrderEvent;
 import com.pizzaflow.order.domain.OrderItem;
 import com.pizzaflow.order.domain.OrderStatus;
 import com.pizzaflow.order.dto.CreateOrderRequest;
+import com.pizzaflow.order.dto.OrderItemDto;
+import com.pizzaflow.order.dto.OrderResponse;
 import com.pizzaflow.order.exception.ResourceNotFoundException;
 import com.pizzaflow.order.producer.OrderEventPublisher;
 import com.pizzaflow.order.repository.OrderRepository;
@@ -33,20 +34,13 @@ public class OrderService {
     private final MeterRegistry meterRegistry;
 
     @Transactional
-    public Order createOrder(CreateOrderRequest request) {
+    public OrderResponse createOrder(CreateOrderRequest request) {
         meterRegistry.counter("pizzaflow.orders.created").increment();
-
-        // Parse address string into Value Object (MVP: basic split or default)
-        // Ideally CreateOrderRequest should accept structured address.
-        // For now, we wrap the string in the new Address record.
-        Address addressVo = new Address(
-                request.getDeliveryAddress(), "", "", "", "" // TODO: Update Request DTO to support full address
-        );
 
         Order order = Order.builder()
                 .customerId(request.getCustomerId())
                 .status(OrderStatus.PENDING)
-                .deliveryAddress(addressVo)
+                .deliveryAddress(request.getDeliveryAddress())
                 .longitude(request.getLongitude())
                 .latitude(request.getLatitude())
                 .build();
@@ -68,7 +62,7 @@ public class OrderService {
         // Publish Event
         orderEventPublisher.publishOrderCreatedEvent(savedOrder);
 
-        return savedOrder;
+        return mapToResponse(savedOrder);
     }
 
     @Transactional
@@ -91,8 +85,8 @@ public class OrderService {
 
         // Use reactive API instead of deprecated synchronous method
         sm.sendEvent(Mono.just(MessageBuilder.withPayload(event)
-                        .setHeader("orderId", order.getId())
-                        .build()))
+                .setHeader("orderId", order.getId())
+                .build()))
                 .blockLast(); // Block for transactional consistency
 
         // For MVP: Manually sync state back to Entity (Simpler than Interceptors for
@@ -109,7 +103,7 @@ public class OrderService {
         sm.stopReactively().block();
         sm.getStateMachineAccessor()
                 .doWithAllRegions(sma -> sma.resetStateMachineReactively(
-                                new DefaultStateMachineContext<>(order.getStatus(), null, null, null))
+                        new DefaultStateMachineContext<>(order.getStatus(), null, null, null))
                         .block());
         sm.startReactively().block();
         return sm;
@@ -118,6 +112,39 @@ public class OrderService {
     public Order getOrder(UUID id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+    }
+
+    public OrderResponse getOrderResponse(UUID id) {
+        return mapToResponse(getOrder(id));
+    }
+
+    public List<OrderResponse> getOrdersResponseByCustomer(Long customerId) {
+        return orderRepository.findByCustomerId(customerId).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    private OrderResponse mapToResponse(Order order) {
+        return OrderResponse.builder()
+                .id(order.getId())
+                .customerId(order.getCustomerId())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .items(order.getItems().stream()
+                        .map(item -> {
+                            OrderItemDto dto = new OrderItemDto();
+                            dto.setProductId(item.getProductId());
+                            dto.setQuantity(item.getQuantity());
+                            dto.setUnitPrice(item.getUnitPrice());
+                            return dto;
+                        })
+                        .toList())
+                .deliveryAddress(order.getDeliveryAddress())
+                .longitude(order.getLongitude())
+                .latitude(order.getLatitude())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
+                .build();
     }
 
     public List<Order> getOrdersByCustomer(Long customerId) {
