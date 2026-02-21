@@ -29,7 +29,7 @@ public class Order {
     private UUID id;
 
     @Column(name = "customer_id", nullable = false)
-    private Long customerId;
+    private UUID customerId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +29,8 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
     void shouldCreateOrderAndPersistToDatabase() {
         // Arrange
         CreateOrderRequest request = new CreateOrderRequest();
-        request.setCustomerId(1L);
+        UUID customerId = UUID.randomUUID();
+        request.setCustomerId(customerId);
         request.setDeliveryAddress(new Address("123 Pizza St", "New York", "NY", "10001", "USA"));
         request.setLatitude(0.0);
         request.setLongitude(0.0);
@@ -47,7 +49,7 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
 
         // Verify Persistence
         Order retrievedOrder = orderRepository.findById(response.getId()).orElseThrow();
-        assertThat(retrievedOrder.getCustomerId()).isEqualTo(1L);
+        assertThat(retrievedOrder.getCustomerId()).isEqualTo(customerId);
         assertThat(retrievedOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
         assertThat(retrievedOrder.getItems()).hasSize(1);
     }

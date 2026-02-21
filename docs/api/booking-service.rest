@@ -1,5 +1,5 @@
 ### Create Booking
-POST http://localhost:8085/api/v1/bookings
+POST http://localhost:8086/api/v1/bookings
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### Get Bookings for Customer
-GET http://localhost:8085/api/v1/bookings/customer/user-123
+GET http://localhost:8086/api/v1/bookings/customer/user-123
 
 ### Get All Tables
-GET http://localhost:8085/api/v1/bookings/tables
+GET http://localhost:8086/api/v1/bookings/tables

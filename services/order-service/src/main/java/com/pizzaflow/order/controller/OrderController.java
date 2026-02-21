@@ -26,13 +26,26 @@ public class OrderController {
                 .body(createdOrder);
     }
 
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.getOrderResponse(id));
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrderResponse> updateStatus(@PathVariable UUID id,
+            @RequestBody java.util.Map<String, String> payload) {
+        String statusStr = payload.get("status");
+        com.pizzaflow.order.domain.OrderStatus status = com.pizzaflow.order.domain.OrderStatus.valueOf(statusStr);
+        return ResponseEntity.ok(orderService.updateStatus(id, status));
+    }
+
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<OrderResponse>> getCustomerOrders(@PathVariable Long customerId) {
+    public ResponseEntity<List<OrderResponse>> getCustomerOrders(@PathVariable UUID customerId) {
         return ResponseEntity.ok(orderService.getOrdersResponseByCustomer(customerId));
     }
 }

@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OrderResponse {
     private UUID id;
-    private Long customerId;
+    private UUID customerId;
     private OrderStatus status;
     private BigDecimal totalAmount;
     private List<OrderItemDto> items;

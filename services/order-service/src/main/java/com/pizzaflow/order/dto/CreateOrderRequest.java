@@ -7,11 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class CreateOrderRequest {
     @NotNull(message = "Customer ID is required")
-    private Long customerId;
+    private UUID customerId;
 
     @NotEmpty(message = "Order items cannot be empty")
     @Valid

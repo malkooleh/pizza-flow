@@ -5,3 +5,4 @@ CREATE DATABASE delivery_db;
 CREATE DATABASE payment_db;
 CREATE DATABASE keycloak_db;
 CREATE DATABASE notification_db;
+CREATE DATABASE kitchen_db;

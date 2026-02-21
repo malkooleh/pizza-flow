@@ -15,6 +15,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,7 +46,7 @@ class OrderServiceChaosTest {
                 orderRepository.deleteAll(); // Clean up for test
 
                 CreateOrderRequest request = new CreateOrderRequest();
-                request.setCustomerId(1L);
+                request.setCustomerId(UUID.randomUUID());
                 request.setDeliveryAddress(new Address("Chaos St", "Fail City", "FC", "00000", "Chaos"));
                 request.setLatitude(0.0);
                 request.setLongitude(0.0);

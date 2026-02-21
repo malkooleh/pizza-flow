@@ -1,8 +1,8 @@
 ### Delivery Service API Testing
-### Base URL: http://localhost:8087 (Internal) or http://localhost:8080/delivery-service (Gateway)
+### Base URL: http://localhost:8088 (Internal) or http://localhost:8080/delivery-service (Gateway)
 
 ### 1. Register Courier
-POST http://localhost:8087/api/v1/deliveries/couriers
+POST http://localhost:8088/api/v1/deliveries/couriers
 Content-Type: application/json
 
 {
@@ -14,16 +14,16 @@ Content-Type: application/json
 ###
 
 ### 2. Update Courier Location
-PATCH http://localhost:8087/api/v1/deliveries/couriers/1/location?lon=30.5240&lat=50.4505
+PATCH http://localhost:8088/api/v1/deliveries/couriers/1/location?lon=30.5240&lat=50.4505
 
 ###
 
 ### 3. Update Delivery Status (Picked Up)
-PATCH http://localhost:8087/api/v1/deliveries/1/status?status=PICKED_UP
+PATCH http://localhost:8088/api/v1/deliveries/1/status?status=PICKED_UP
 
 ###
 
 ### 4. Update Delivery Status (Delivered)
-PATCH http://localhost:8087/api/v1/deliveries/1/status?status=DELIVERED
+PATCH http://localhost:8088/api/v1/deliveries/1/status?status=DELIVERED
 
 ###

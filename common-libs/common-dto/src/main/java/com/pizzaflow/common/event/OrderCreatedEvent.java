@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OrderCreatedEvent {
     private UUID orderId;
-    private Long customerId;
+    private UUID customerId;
     private BigDecimal totalAmount;
     private List<OrderItemEvent> items;
     private Address deliveryAddress;

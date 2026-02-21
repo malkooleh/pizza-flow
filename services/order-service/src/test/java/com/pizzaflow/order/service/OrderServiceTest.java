@@ -3,6 +3,7 @@ package com.pizzaflow.order.service;
 import com.pizzaflow.common.dto.Address;
 import com.pizzaflow.order.domain.Order;
 import com.pizzaflow.order.domain.OrderEvent;
+import com.pizzaflow.order.domain.OrderItem;
 import com.pizzaflow.order.domain.OrderStatus;
 import com.pizzaflow.order.dto.CreateOrderRequest;
 import com.pizzaflow.order.dto.OrderItemDto;
@@ -64,9 +65,10 @@ class OrderServiceTest {
     void createOrder_ShouldSaveOrderAndPublishEvent() {
         // Arrange
         UUID orderId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
 
         CreateOrderRequest request = new CreateOrderRequest();
-        request.setCustomerId(1L);
+        request.setCustomerId(customerId);
         request.setDeliveryAddress(new Address("123 Pizza St", "New York", "NY", "10001", "USA"));
         request.setLatitude(40.7128);
         request.setLongitude(-74.0060);
@@ -79,9 +81,10 @@ class OrderServiceTest {
 
         Order savedOrder = Order.builder()
                 .id(orderId)
-                .customerId(1L)
+                .customerId(customerId)
                 .status(OrderStatus.PENDING)
                 .totalAmount(new BigDecimal("30.00")) // 15 * 2
+                .items(List.of(OrderItem.builder().unitPrice(new BigDecimal("15.00")).build()))
                 .build();
 
         when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
@@ -98,7 +101,7 @@ class OrderServiceTest {
         verify(orderRepository).save(orderCaptor.capture());
 
         Order capturedOrder = orderCaptor.getValue();
-        assertThat(capturedOrder.getCustomerId()).isEqualTo(1L);
+        assertThat(capturedOrder.getCustomerId()).isEqualTo(customerId);
         assertThat(capturedOrder.getTotalAmount()).isEqualByComparingTo("30.00");
         assertThat(capturedOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
         assertThat(capturedOrder.getItems()).hasSize(1);

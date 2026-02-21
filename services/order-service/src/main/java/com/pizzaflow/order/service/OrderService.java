@@ -33,6 +33,24 @@ public class OrderService {
     private final StateMachineFactory<OrderStatus, OrderEvent> stateMachineFactory;
     private final MeterRegistry meterRegistry;
 
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Transactional
+    public OrderResponse updateStatus(UUID orderId, OrderStatus status) {
+        Order order = getOrder(orderId);
+        order.setStatus(status);
+        Order savedOrder = orderRepository.save(order);
+
+        // In a real app, we might want to publish an event here too
+        // orderEventPublisher.publishOrderStatusChangedEvent(savedOrder);
+
+        return mapToResponse(savedOrder);
+    }
+
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
         meterRegistry.counter("pizzaflow.orders.created").increment();
@@ -118,7 +136,7 @@ public class OrderService {
         return mapToResponse(getOrder(id));
     }
 
-    public List<OrderResponse> getOrdersResponseByCustomer(Long customerId) {
+    public List<OrderResponse> getOrdersResponseByCustomer(UUID customerId) {
         return orderRepository.findByCustomerId(customerId).stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -147,7 +165,7 @@ public class OrderService {
                 .build();
     }
 
-    public List<Order> getOrdersByCustomer(Long customerId) {
+    public List<Order> getOrdersByCustomer(UUID customerId) {
         return orderRepository.findByCustomerId(customerId);
     }
 

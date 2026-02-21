@@ -1,0 +1,11 @@
+### Notification Service API Testing
+### Base URL: http://localhost:8089 (Internal) or http://localhost:8080/notification-service (Gateway)
+
+### Health Check
+GET http://localhost:8089/actuator/health
+
+### Prometheus Metrics
+GET http://localhost:8089/actuator/prometheus
+
+###
+

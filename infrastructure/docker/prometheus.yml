@@ -11,7 +11,7 @@ scrape_configs:
   - job_name: 'catalog-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8081']
+      - targets: ['host.docker.internal:8083']
 
   - job_name: 'order-service'
     metrics_path: '/actuator/prometheus'
@@ -21,24 +21,29 @@ scrape_configs:
   - job_name: 'payment-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8083']
+      - targets: ['host.docker.internal:8084']
 
   - job_name: 'kitchen-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8084']
+      - targets: ['host.docker.internal:8085']
 
   - job_name: 'booking-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8085']
+      - targets: ['host.docker.internal:8086']
 
   - job_name: 'inventory-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8086']
+      - targets: ['host.docker.internal:8087']
 
   - job_name: 'delivery-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8087']
+      - targets: ['host.docker.internal:8088']
+
+  - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8089']

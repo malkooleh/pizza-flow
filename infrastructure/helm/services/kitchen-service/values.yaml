@@ -4,7 +4,7 @@ image:
 
 service:
   type: ClusterIP
-  port: 8084
+  port: 8085
 
 env:
   SPRING_PROFILES_ACTIVE: "prod"

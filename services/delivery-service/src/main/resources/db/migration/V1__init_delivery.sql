@@ -16,7 +16,11 @@ CREATE TABLE IF NOT EXISTS delivery (
     courier_id BIGINT REFERENCES courier(id),
     status VARCHAR(50) NOT NULL,
     delivery_location GEOMETRY(Point, 4326) NOT NULL,
-    delivery_address TEXT NOT NULL,
+    street VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(100),
+    zip_code VARCHAR(20),
+    country VARCHAR(100),
     assigned_at TIMESTAMP,
     picked_up_at TIMESTAMP,
     delivered_at TIMESTAMP,
@@ -33,8 +37,8 @@ CREATE TABLE IF NOT EXISTS delivery_zone (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_courier_location ON courier USING GIST(current_location);
-CREATE INDEX idx_delivery_location ON delivery USING GIST(delivery_location);
-CREATE INDEX idx_delivery_zone_area ON delivery_zone USING GIST(area);
-CREATE INDEX idx_delivery_status ON delivery(status);
-CREATE INDEX idx_courier_status ON courier(status);
+CREATE INDEX IF NOT EXISTS idx_courier_location ON courier USING GIST(current_location);
+CREATE INDEX IF NOT EXISTS idx_delivery_location ON delivery USING GIST(delivery_location);
+CREATE INDEX IF NOT EXISTS idx_delivery_zone_area ON delivery_zone USING GIST(area);
+CREATE INDEX IF NOT EXISTS idx_delivery_status ON delivery(status);
+CREATE INDEX IF NOT EXISTS idx_courier_status ON courier(status);

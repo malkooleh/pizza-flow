@@ -43,6 +43,13 @@ public class Delivery {
     private Point deliveryLocation;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "street", column = @Column(name = "street")),
+            @AttributeOverride(name = "city", column = @Column(name = "city")),
+            @AttributeOverride(name = "state", column = @Column(name = "state")),
+            @AttributeOverride(name = "zipCode", column = @Column(name = "zip_code")),
+            @AttributeOverride(name = "country", column = @Column(name = "country"))
+    })
     private Address deliveryAddress;
 
     @Column(name = "assigned_at")

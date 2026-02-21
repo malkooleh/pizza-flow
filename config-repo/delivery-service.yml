@@ -1,8 +1,11 @@
+server:
+  port: 8088
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/delivery_db
     username: postgres
-    password: postgres
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,6 +17,9 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    url: jdbc:postgresql://localhost:5432/delivery_db
+    user: postgres
+    password: password
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
