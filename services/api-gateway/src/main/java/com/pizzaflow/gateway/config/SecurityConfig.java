@@ -17,6 +17,8 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 .pathMatchers("/actuator/**").permitAll()
                 .pathMatchers("/eureka/**").permitAll()
+                .pathMatchers("/api/v1/catalog/**").permitAll() // Public menu
+                .pathMatchers("/api/v1/bookings/availability/**").permitAll() // Public check
                 .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}));

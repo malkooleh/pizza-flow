@@ -1,3 +1,5 @@
+name: pizza-flow
+
 services:
   postgres:
     image: postgis/postgis:16-3.5-alpine
@@ -16,6 +18,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - pizza-flow-net
 
   mongodb:
     image: mongo:7.0
@@ -28,10 +32,12 @@ services:
     volumes:
       - mongo-data:/data/db
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: mongosh --username admin --password password --authenticationDatabase admin --eval 'db.adminCommand("ping")'
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - pizza-flow-net
 
   redis:
     image: redis:7.2-alpine
@@ -43,6 +49,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - pizza-flow-net
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -64,15 +72,17 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
     healthcheck:
-      test: [ "CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list" ]
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
       interval: 10s
       timeout: 10s
-      retries: 10
+      retries: 5
+    networks:
+      - pizza-flow-net
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.0
     container_name: pizza-flow-keycloak
-    command: start-dev
+    command: start-dev --import-realm
     ports:
       - "8081:8080"
     environment:
@@ -82,9 +92,13 @@ services:
       KC_DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - pizza-flow-net
 
   mailpit:
     image: axllent/mailpit
@@ -92,12 +106,16 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+    networks:
+      - pizza-flow-net
 
   zipkin:
     image: openzipkin/zipkin
     container_name: pizza-flow-zipkin
     ports:
       - "9411:9411"
+    networks:
+      - pizza-flow-net
 
   prometheus:
     image: prom/prometheus:latest
@@ -108,6 +126,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - pizza-flow-net
 
   grafana:
     image: grafana/grafana:latest
@@ -119,6 +139,8 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
       - prometheus
+    networks:
+      - pizza-flow-net
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
@@ -130,9 +152,11 @@ services:
       - "9200:9200"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsSL http://localhost:9200/_cat/health || exit 1"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 5
+    networks:
+      - pizza-flow-net
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.18
@@ -144,6 +168,8 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+    networks:
+      - pizza-flow-net
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:7.17.18
@@ -156,6 +182,14 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+    networks:
+      - pizza-flow-net
+    command: ["filebeat", "-e", "-strict.perms=false"]
+
+networks:
+  pizza-flow-net:
+    name: pizza-flow-net
+    driver: bridge
 
 volumes:
   postgres-data:

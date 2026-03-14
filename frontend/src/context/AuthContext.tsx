@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import Keycloak from 'keycloak-js';
+import axios from 'axios';
 
 interface UserProfile {
     id?: string;
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         keycloak
             .init({
                 onLoad: 'check-sso',
-                silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+                checkLoginIframe: false,
                 pkceMethod: 'S256',
             })
             .then((authenticated) => {
@@ -77,6 +78,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
 
     }, []);
+
+    // Global Axios interceptor for token injection
+    useEffect(() => {
+        if (!token) return;
+
+        const interceptor = axios.interceptors.request.use((config) => {
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        });
+
+        return () => {
+            axios.interceptors.request.eject(interceptor);
+        };
+    }, [token]);
 
     const login = () => keycloakRef.current?.login();
     const logout = () => {

@@ -15,7 +15,18 @@ export const Header = () => {
                     PizzaFlow
                 </Link>
                 <nav className="hidden md:flex gap-4 ml-8 text-sm font-medium text-gray-600">
-                    <Link to="/" className="hover:text-black">Menu</Link>
+                    <button 
+                        onClick={() => {
+                            if (window.location.pathname === '/') {
+                                document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
+                            } else {
+                                window.location.href = '/#menu';
+                            }
+                        }}
+                        className="hover:text-black"
+                    >
+                        Menu
+                    </button>
                     {isAuthenticated && (
                         <>
                             <Link to="/orders" className="hover:text-black">My Orders</Link>
