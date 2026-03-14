@@ -126,10 +126,24 @@ public class KitchenService {
 
     private void broadcastUpdate(KitchenOrder order) {
         log.info("Broadcasting Kitchen Update: {}", order);
-        messagingTemplate.convertAndSend("/topic/kitchen/updates", mapToDto(order));
+        KitchenOrderDto dto = mapToDto(order);
+        messagingTemplate.convertAndSend("/topic/kitchen/updates", dto);
+        
+        // Also broadcast to general order topics for Admin and individual tracking
+        messagingTemplate.convertAndSend("/topic/orders", java.util.Map.of(
+            "orderId", order.getOrderId(),
+            "status", order.getStatus().name(),
+            "type", "KITCHEN_UPDATE"
+        ));
+        
+        messagingTemplate.convertAndSend("/topic/orders/" + order.getOrderId(), java.util.Map.of(
+            "orderId", order.getOrderId(),
+            "status", order.getStatus().name()
+        ));
     }
 
     private KitchenOrderDto mapToDto(KitchenOrder order) {
+
         return KitchenOrderDto.builder()
                 .id(order.getId())
                 .orderId(order.getOrderId())

@@ -73,6 +73,7 @@ public class BookingService {
         booking.setCustomerId(request.getCustomerId());
         booking.setTable(table);
         booking.setBookingTime(request.getBookingTime());
+        booking.setPartySize(request.getPartySize());
         booking.setStatus(BookingStatus.CONFIRMED);
 
         Booking saved = bookingRepository.save(booking);
@@ -95,6 +96,7 @@ public class BookingService {
                 booking.getCustomerId(),
                 booking.getTable().getTableNumber(),
                 booking.getBookingTime(),
+                booking.getPartySize(),
                 booking.getStatus()
         );
     }

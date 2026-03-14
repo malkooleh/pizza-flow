@@ -15,5 +15,6 @@ public class BookingResponse {
     private String customerId;
     private Integer tableNumber;
     private Instant bookingTime;
+    private Integer partySize;
     private BookingStatus status;
 }

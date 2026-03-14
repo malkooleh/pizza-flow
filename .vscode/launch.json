@@ -1,0 +1,91 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "GatewayApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.gateway.GatewayApplication",
+            "projectName": "api-gateway"
+        },
+        {
+            "type": "java",
+            "name": "BookingServiceApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.booking.BookingServiceApplication",
+            "projectName": "booking-service"
+        },
+        {
+            "type": "java",
+            "name": "CatalogApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.catalog.CatalogApplication",
+            "projectName": "catalog-service"
+        },
+        {
+            "type": "java",
+            "name": "ConfigApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.config.ConfigApplication",
+            "projectName": "config-service"
+        },
+        {
+            "type": "java",
+            "name": "DeliveryServiceApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.delivery.DeliveryServiceApplication",
+            "projectName": "delivery-service"
+        },
+        {
+            "type": "java",
+            "name": "DiscoveryApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.discovery.DiscoveryApplication",
+            "projectName": "discovery-service"
+        },
+        {
+            "type": "java",
+            "name": "InventoryServiceApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.inventory.InventoryServiceApplication",
+            "projectName": "inventory-service"
+        },
+        {
+            "type": "java",
+            "name": "KitchenApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.kitchen.KitchenApplication",
+            "projectName": "kitchen-service"
+        },
+        {
+            "type": "java",
+            "name": "NotificationApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.notification.NotificationApplication",
+            "projectName": "notification-service"
+        },
+        {
+            "type": "java",
+            "name": "OrderApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.order.OrderApplication",
+            "projectName": "order-service"
+        },
+        {
+            "type": "java",
+            "name": "PaymentApplication",
+            "request": "launch",
+            "mainClass": "com.pizzaflow.payment.PaymentApplication",
+            "projectName": "payment-service"
+        }
+    ]
+}

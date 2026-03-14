@@ -37,6 +37,9 @@ public class Booking {
     @Column(nullable = false)
     private BookingStatus status;
 
+    @Column(name = "party_size", nullable = false)
+    private Integer partySize;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

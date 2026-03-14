@@ -34,4 +34,17 @@ public class InventoryController {
     public ResponseEntity<InventoryItemResponse> getItemById(@PathVariable Long id) {
         return ResponseEntity.ok(inventoryService.getItemById(id));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<InventoryItemResponse> updateInventoryItem(
+            @PathVariable Long id,
+            @Valid @RequestBody com.pizzaflow.inventory.dto.UpdateInventoryItemRequest request) {
+        return ResponseEntity.ok(inventoryService.updateInventoryItem(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteInventoryItem(@PathVariable Long id) {
+        inventoryService.deleteInventoryItem(id);
+        return ResponseEntity.noContent().build();
+    }
 }

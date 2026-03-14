@@ -57,6 +57,33 @@ public class InventoryService {
     }
 
     @Transactional
+    public InventoryItemResponse updateInventoryItem(Long id, com.pizzaflow.inventory.dto.UpdateInventoryItemRequest request) {
+        InventoryItem item = findItemById(id);
+        
+        if (request.getProductName() != null) {
+            item.setProductName(request.getProductName());
+        }
+        if (request.getQuantity() != null) {
+            item.setQuantity(request.getQuantity());
+        }
+        if (request.getUnit() != null) {
+            item.setUnit(request.getUnit());
+        }
+        
+        InventoryItem updatedItem = inventoryItemRepository.save(item);
+        log.info("Updated inventory item: {}", updatedItem.getProductId());
+        
+        return mapToResponse(updatedItem);
+    }
+
+    @Transactional
+    public void deleteInventoryItem(Long id) {
+        InventoryItem item = findItemById(id);
+        inventoryItemRepository.delete(item);
+        log.info("Deleted inventory item: {}", item.getProductId());
+    }
+
+    @Transactional
     public void reserveStockForOrder(UUID orderId, Map<String, Integer> productQuantities) {
         log.info("Attempting to reserve stock for order: {}", orderId);
 
